@@ -45,6 +45,8 @@ services:
       - CorsSettings__AllowedOrigins=${CORS_ALLOWED_ORIGINS}
     ports:
       - "5000:5000"
+    networks:
+      - spendwise-network
     restart: unless-stopped
 
 
@@ -70,7 +72,3 @@ services:
 networks:
   spendwise-network:
     driver: bridge
-
-volumes:
-  postgres_data:
-    driver: local
