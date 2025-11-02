@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+#  db:
+#    image: postgres:15-alpine
+#    container_name: spendwise-db
+#    environment:
+#      POSTGRES_USER: appuser
+#      POSTGRES_PASSWORD: apppassword
+#      POSTGRES_DB: appdb
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#    networks:
+#      - spendwise-network
+#    restart: unless-stopped
+
+  # ============================================
+  # Backend API (.NET 9)
+  # ============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spendwise-backend
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD};SSL Mode=${DB_SSL_MODE};Trust Server Certificate=true
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=${JWT_ISSUER}
+      - JwtSettings__Audience=${JWT_AUDIENCE}
+      - JwtSettings__ExpirationInMinutes=${JWT_EXPIRATION}
+      - CorsSettings__AllowedOrigins=${CORS_ALLOWED_ORIGINS}
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+
+  # ============================================
+  # Frontend (Next.js)
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: spendwise-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - spendwise-network
+    restart: unless-stopped
+
+networks:
+  spendwise-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

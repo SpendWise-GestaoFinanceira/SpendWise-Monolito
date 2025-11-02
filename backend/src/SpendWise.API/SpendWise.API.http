@@ -1,0 +1,117 @@
+@SpendWise.API_HostAddress = http://localhost:5057
+
+GET {{SpendWise.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+# ===== AUTENTICAÇÃO =====
+
+### Login para obter token JWT
+POST {{SpendWise.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@teste.com",
+  "senha": "MinhaSenh@123"
+}
+
+### Registrar novo usuário (se necessário)
+POST {{SpendWise.API_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Usuário Teste",
+  "email": "usuario@teste.com",
+  "senha": "MinhaSenh@123"
+}
+
+# ===== ORÇAMENTOS MENSAIS =====
+# Substitua SEU_TOKEN_JWT pelo token obtido no login
+
+### Listar todos os orçamentos mensais do usuário
+GET {{SpendWise.API_HostAddress}}/api/orcamentosmensais
+Authorization: Bearer SEU_TOKEN_JWT
+Accept: application/json
+
+###
+
+### Buscar orçamento mensal específico por ID
+GET {{SpendWise.API_HostAddress}}/api/orcamentosmensais/GUID_DO_ORCAMENTO
+Authorization: Bearer SEU_TOKEN_JWT
+Accept: application/json
+
+###
+
+### Buscar orçamento mensal por período (ano-mês)
+GET {{SpendWise.API_HostAddress}}/api/orcamentosmensais/periodo/2025-01
+Authorization: Bearer SEU_TOKEN_JWT
+Accept: application/json
+
+###
+
+### Criar novo orçamento mensal
+POST {{SpendWise.API_HostAddress}}/api/orcamentosmensais
+Authorization: Bearer SEU_TOKEN_JWT
+Content-Type: application/json
+
+{
+  "anoMes": "2025-02",
+  "valor": 3000.00,
+  "moeda": "BRL"
+}
+
+###
+
+### Atualizar orçamento mensal existente
+PUT {{SpendWise.API_HostAddress}}/api/orcamentosmensais/GUID_DO_ORCAMENTO
+Authorization: Bearer SEU_TOKEN_JWT
+Content-Type: application/json
+
+{
+  "valor": 3500.00,
+  "moeda": "BRL"
+}
+
+###
+
+### Excluir orçamento mensal
+DELETE {{SpendWise.API_HostAddress}}/api/orcamentosmensais/GUID_DO_ORCAMENTO
+Authorization: Bearer SEU_TOKEN_JWT
+
+###
+
+# ===== EXEMPLOS COM DADOS REAIS =====
+
+### Criar orçamento para Janeiro 2025
+POST {{SpendWise.API_HostAddress}}/api/orcamentosmensais
+Authorization: Bearer SEU_TOKEN_JWT
+Content-Type: application/json
+
+{
+  "anoMes": "2025-01",
+  "valor": 2500.00,
+  "moeda": "BRL"
+}
+
+###
+
+### Criar orçamento para Fevereiro 2025
+POST {{SpendWise.API_HostAddress}}/api/orcamentosmensais
+Authorization: Bearer SEU_TOKEN_JWT
+Content-Type: application/json
+
+{
+  "anoMes": "2025-02",
+  "valor": 2800.00,
+  "moeda": "BRL"
+}
+
+###
+
+### Buscar orçamento de Janeiro 2025
+GET {{SpendWise.API_HostAddress}}/api/orcamentosmensais/periodo/2025-01
+Authorization: Bearer SEU_TOKEN_JWT
+Accept: application/json
+
+###
