@@ -128,6 +128,8 @@ jobs:
       - name: 📦 Instalar dependências
         working-directory: ./frontend
         run: npm ci
+        env:
+          CI: true
 
       - name: 🎨 Lint
         working-directory: ./frontend
