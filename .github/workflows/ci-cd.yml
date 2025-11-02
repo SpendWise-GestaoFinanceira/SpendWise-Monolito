@@ -107,9 +107,6 @@ jobs:
   frontend-build-test:
     name: Frontend - Build & Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
 
     steps:
       - name: 📥 Checkout código
@@ -121,18 +118,22 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: 📦 Instalar dependências
+        working-directory: ./frontend
         run: npm ci
 
       - name: 🎨 Lint
+        working-directory: ./frontend
         run: npm run lint
         continue-on-error: true
 
       - name: 🔨 Build
+        working-directory: ./frontend
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5000
 
       - name: 🧪 Executar testes
+        working-directory: ./frontend
         run: npm test -- --passWithNoTests
         continue-on-error: true
 
