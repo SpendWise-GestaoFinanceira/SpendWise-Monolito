@@ -110,17 +110,21 @@ public class AuthController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("[ForgotPassword] Recebida solicitação para: {Email}", request.Email);
             var command = new ForgotPasswordCommand(request.Email);
             var result = await _mediator.Send(command);
+            _logger.LogInformation("[ForgotPassword] Solicitação processada com sucesso");
             return Ok(result);
         }
         catch (ValidationException ex)
         {
+            _logger.LogWarning("[ForgotPassword] Erro de validação: {Message}", ex.Message);
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Erro interno do servidor" });
+            _logger.LogError(ex, "[ForgotPassword] Erro interno: {Message}", ex.Message);
+            return StatusCode(500, new { message = "Erro interno do servidor", details = ex.Message });
         }
     }
 

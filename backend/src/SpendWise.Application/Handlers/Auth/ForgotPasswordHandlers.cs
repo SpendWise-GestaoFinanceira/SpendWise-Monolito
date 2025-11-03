@@ -32,48 +32,65 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
 
     public async Task<ForgotPasswordResponseDto> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
+        try
         {
-            throw new ValidationException(validationResult.Errors);
-        }
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
 
-        var usuario = await _unitOfWork.Usuarios.BuscarPorEmailAsync(request.Email);
+            var usuario = await _unitOfWork.Usuarios.BuscarPorEmailAsync(request.Email);
 
-        // Por segurança, sempre retornar sucesso mesmo se usuário não existir
-        if (usuario == null)
-        {
+            // Por segurança, sempre retornar sucesso mesmo se usuário não existir
+            if (usuario == null)
+            {
+                return new ForgotPasswordResponseDto
+                {
+                    Success = true,
+                    Message = "Se o email estiver cadastrado, você receberá instruções para redefinir sua senha."
+                };
+            }
+
+            // Gerar token seguro
+            var token = GenerateSecureToken();
+            var validPeriod = TimeSpan.FromMinutes(30); // Token válido por 30 minutos
+
+            usuario.DefinirTokenResetSenha(token, validPeriod);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Construir URL de reset usando variável de ambiente
+            var baseUrl = _configuration["FrontendUrl"] ?? "http://localhost:3000";
+            var resetUrl = $"{baseUrl}/redefinir-senha?token={token}&email={request.Email}";
+
+            // Log para debug
+            Console.WriteLine($"[ForgotPassword] Frontend URL: {baseUrl}");
+            Console.WriteLine($"[ForgotPassword] Reset URL: {resetUrl}");
+
+            // Enviar email
+            var emailSent = await _emailService.SendPasswordResetEmailAsync(
+                usuario.Email.Valor,
+                token,
+                resetUrl);
+
             return new ForgotPasswordResponseDto
             {
-                Success = true,
-                Message = "Se o email estiver cadastrado, você receberá instruções para redefinir sua senha."
+                Success = emailSent,
+                Message = emailSent
+                    ? "Se o email estiver cadastrado, você receberá instruções para redefinir sua senha."
+                    : "Erro temporário. Tente novamente em alguns minutos."
             };
         }
-
-        // Gerar token seguro
-        var token = GenerateSecureToken();
-        var validPeriod = TimeSpan.FromMinutes(30); // Token válido por 30 minutos
-
-        usuario.DefinirTokenResetSenha(token, validPeriod);
-        await _unitOfWork.SaveChangesAsync();
-
-        // Construir URL de reset usando variável de ambiente
-        var baseUrl = _configuration["FrontendUrl"] ?? "http://localhost:3000";
-        var resetUrl = $"{baseUrl}/redefinir-senha?token={token}&email={request.Email}";
-
-        // Enviar email
-        var emailSent = await _emailService.SendPasswordResetEmailAsync(
-            usuario.Email.Valor,
-            token,
-            resetUrl);
-
-        return new ForgotPasswordResponseDto
+        catch (ValidationException)
         {
-            Success = emailSent,
-            Message = emailSent
-                ? "Se o email estiver cadastrado, você receberá instruções para redefinir sua senha."
-                : "Erro temporário. Tente novamente em alguns minutos."
-        };
+            throw; // Re-throw validation exceptions
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ForgotPassword] ERROR: {ex.Message}");
+            Console.WriteLine($"[ForgotPassword] StackTrace: {ex.StackTrace}");
+            throw; // Re-throw para o controller capturar
+        }
     }
 
     private static string GenerateSecureToken()
