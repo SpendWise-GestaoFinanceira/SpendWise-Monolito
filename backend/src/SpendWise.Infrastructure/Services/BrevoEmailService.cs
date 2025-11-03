@@ -33,7 +33,16 @@ public class BrevoEmailService : IEmailService
             throw new InvalidOperationException("Brevo API Key não configurada");
         }
 
-        Configuration.Default.ApiKey.Add("api-key", apiKey);
+        // Configurar API Key (verificar se já existe para evitar erro em múltiplas instâncias)
+        if (!Configuration.Default.ApiKey.ContainsKey("api-key"))
+        {
+            Configuration.Default.ApiKey.Add("api-key", apiKey);
+        }
+        else
+        {
+            Configuration.Default.ApiKey["api-key"] = apiKey;
+        }
+        
         _apiInstance = new TransactionalEmailsApi();
         _logger.LogInformation("✅ BrevoEmailService inicializado com sucesso");
     }
