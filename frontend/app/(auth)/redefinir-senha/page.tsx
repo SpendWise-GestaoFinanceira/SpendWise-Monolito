@@ -75,10 +75,10 @@ function RedefinirSenhaContent() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email,
-            token,
-            newPassword,
-            confirmPassword,
+            Email: email,
+            Token: token,
+            NewPassword: newPassword,
+            ConfirmPassword: confirmPassword,
           }),
         }
       );
