@@ -13,10 +13,12 @@ namespace SpendWise.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, ILogger<AuthController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     /// <summary>
