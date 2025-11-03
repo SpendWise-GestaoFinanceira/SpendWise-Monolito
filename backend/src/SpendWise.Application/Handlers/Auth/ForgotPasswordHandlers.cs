@@ -61,7 +61,9 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
 
             // Construir URL de reset usando variável de ambiente
             var baseUrl = _configuration["FrontendUrl"] ?? "http://localhost:3000";
-            var resetUrl = $"{baseUrl}/redefinir-senha?token={token}&email={request.Email}";
+            var encodedToken = Uri.EscapeDataString(token);
+            var resetUrl = $"{baseUrl}/redefinir-senha?token={encodedToken}&email={Uri.EscapeDataString(request.Email)}";
+
 
             // Log para debug
             Console.WriteLine($"[ForgotPassword] Frontend URL: {baseUrl}");

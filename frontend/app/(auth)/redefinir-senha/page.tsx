@@ -76,7 +76,7 @@ function RedefinirSenhaContent() {
           },
           body: JSON.stringify({
             Email: email,
-            Token: token,
+            Token: decodeURIComponent(token),
             NewPassword: newPassword,
             ConfirmPassword: confirmPassword,
           }),
