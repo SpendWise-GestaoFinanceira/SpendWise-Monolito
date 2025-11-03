@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using SpendWise.Application.Commands.Auth;
 using SpendWise.Application.DTOs.Auth;
 using SpendWise.Domain.Interfaces;
@@ -13,17 +14,20 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
     private readonly IEmailService _emailService;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IValidator<ForgotPasswordCommand> _validator;
+    private readonly IConfiguration _configuration;
 
     public ForgotPasswordCommandHandler(
         IUnitOfWork unitOfWork,
         IEmailService emailService,
         IPasswordHasher passwordHasher,
-        IValidator<ForgotPasswordCommand> validator)
+        IValidator<ForgotPasswordCommand> validator,
+        IConfiguration configuration)
     {
         _unitOfWork = unitOfWork;
         _emailService = emailService;
         _passwordHasher = passwordHasher;
         _validator = validator;
+        _configuration = configuration;
     }
 
     public async Task<ForgotPasswordResponseDto> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
@@ -53,8 +57,8 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         usuario.DefinirTokenResetSenha(token, validPeriod);
         await _unitOfWork.SaveChangesAsync();
 
-        // Construir URL de reset (hardcoded para desenvolvimento, em produção viria de configuração)
-        var baseUrl = "http://localhost:3000"; // Frontend base URL
+        // Construir URL de reset usando variável de ambiente
+        var baseUrl = _configuration["FrontendUrl"] ?? "http://localhost:3000";
         var resetUrl = $"{baseUrl}/redefinir-senha?token={token}&email={request.Email}";
 
         // Enviar email
