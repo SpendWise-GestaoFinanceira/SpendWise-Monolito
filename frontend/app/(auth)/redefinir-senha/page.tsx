@@ -28,12 +28,7 @@ function RedefinirSenhaContent() {
     const emailParam = searchParams.get('email');
     const tokenParam = searchParams.get('token');
 
-    console.log('🔍 Debug - Email:', emailParam);
-    console.log('🔍 Debug - Token:', tokenParam);
-    console.log('🔍 Debug - URL completa:', window.location.href);
-
     if (!emailParam || !tokenParam) {
-      console.log('❌ Parâmetros inválidos!');
       toast({
         title: 'Link inválido',
         description: 'O link de recuperação está inválido ou expirado.',
@@ -43,7 +38,6 @@ function RedefinirSenhaContent() {
       return;
     }
 
-    console.log('✅ Parâmetros válidos, definindo estado...');
     setEmail(emailParam);
     setToken(tokenParam);
   }, [searchParams, router, toast]);
