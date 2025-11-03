@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { getApiUrl } from '@/lib/config';
 import Link from 'next/link';
 import { ArrowLeft, Mail, CheckCircle2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 export default function EsqueciSenhaPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -19,7 +22,7 @@ export default function EsqueciSenhaPage() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = getApiUrl();
       const response = await fetch(
         `${apiUrl}/Auth/forgot-password`,
         {

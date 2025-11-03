@@ -32,6 +32,13 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# IMPORTANTE: Variáveis NEXT_PUBLIC_* devem ser definidas em BUILD TIME
+# Elas serão embutidas no bundle JavaScript
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_NAME=SpendWise
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+
 # Build da aplicação
 # Next.js coleta telemetria anônima sobre uso geral
 # Desabilite com: NEXT_TELEMETRY_DISABLED=1

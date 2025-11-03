@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { getApiUrl } from '@/lib/config';
 import Link from 'next/link';
 import { Eye, EyeOff, Lock, CheckCircle2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 function RedefinirSenhaContent() {
   const [newPassword, setNewPassword] = useState('');
@@ -65,7 +66,7 @@ function RedefinirSenhaContent() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = getApiUrl();
       const response = await fetch(
         `${apiUrl}/Auth/reset-password`,
         {
