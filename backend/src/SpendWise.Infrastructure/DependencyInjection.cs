@@ -23,7 +23,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-        // Add Email Service (Brevo)
+        // Add Email Service (Brevo para produção)
         services.AddScoped<IEmailService, BrevoEmailService>();
 
         // Add Cache Service

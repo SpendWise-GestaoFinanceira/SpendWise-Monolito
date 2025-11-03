@@ -20,7 +20,7 @@ public class BrevoEmailService : IEmailService
     {
         _logger = logger;
 
-        var apiKey = configuration["EmailSettings:ApiKey"];
+        var apiKey = configuration["EmailSettings:BrevoApiKey"];
         _senderEmail = configuration["EmailSettings:SenderEmail"] ?? "noreply@spendwise.com";
         _senderName = configuration["EmailSettings:SenderName"] ?? "SpendWise";
 
