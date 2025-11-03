@@ -141,9 +141,6 @@ public class AuthController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("[ResetPassword] Recebida solicitação para: {Email}", request.Email);
-            _logger.LogInformation("[ResetPassword] Token: {Token}", request.Token);
-            
             var command = new ResetPasswordCommand(
                 request.Email,
                 request.Token,
@@ -151,18 +148,14 @@ public class AuthController : ControllerBase
                 request.ConfirmPassword);
 
             var result = await _mediator.Send(command);
-            
-            _logger.LogInformation("[ResetPassword] Senha redefinida com sucesso");
             return Ok(result);
         }
         catch (ValidationException ex)
         {
-            _logger.LogError("[ResetPassword] Erro de validação: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message, errors = ex.Errors.Select(e => e.ErrorMessage) });
+            return BadRequest(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError("[ResetPassword] Erro interno: {Message}", ex.Message);
             return StatusCode(500, new { message = "Erro interno do servidor" });
         }
     }
