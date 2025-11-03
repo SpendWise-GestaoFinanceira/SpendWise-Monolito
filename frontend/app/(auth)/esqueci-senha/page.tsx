@@ -19,8 +19,9 @@ export default function EsqueciSenhaPage() {
     setIsLoading(true);
 
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const response = await fetch(
-        'http://localhost:5000/api/Auth/forgot-password',
+        `${apiUrl}/Auth/forgot-password`,
         {
           method: 'POST',
           headers: {

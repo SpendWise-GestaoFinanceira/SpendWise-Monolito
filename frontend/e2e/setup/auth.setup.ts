@@ -1,6 +1,6 @@
 import { test as setup } from '@playwright/test';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.API_URL || 'http://localhost:5000/api';
 
 setup('criar usuário de teste', async ({ request }) => {
   // Tentar criar o usuário de teste
